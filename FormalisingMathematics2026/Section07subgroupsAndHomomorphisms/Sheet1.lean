@@ -110,6 +110,8 @@ satisfies the axioms for a subgroup.
 -/
 variable {G H} {x : G}
 
+#where
+
 variable {y z : G}
 
 theorem conjugate.one_mem : (1 : G) ∈ {a : G | ∃ h, h ∈ H ∧ a = x * h * x⁻¹} := by
@@ -228,3 +230,17 @@ theorem conjugate_eq_of_abelian (habelian : ∀ a b : G, a * b = b * a) : conjug
     · rw[habelian, ← mul_assoc, inv_mul_cancel, one_mul]
 
 end Section7sheet1
+
+section
+
+variable (G H : Type) [Group G] [Group H]
+
+structure WeakGroupHom where
+  toFun : G → H
+  map_mul : ∀ x y : G, toFun (x * y) = toFun x * toFun y
+
+lemma map_mul' {φ : WeakGroupHom G H} (x y : G) :
+    φ.toFun (x * y) = φ.toFun x * φ.toFun y := by
+  rw [φ.map_mul]
+
+end
