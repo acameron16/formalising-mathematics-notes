@@ -37,7 +37,13 @@ example (a b : G) (ha : a ∈ H) (hb : b ∈ H) : a * b ∈ H := by
 
 example (a b c : G) (ha : a ∈ H) (hb : b ∈ H) (hc : c ∈ H) :
     a * b⁻¹ * 1 * (a * c) ∈ H := by
-  sorry
+  apply H.mul_mem
+  apply H.mul_mem
+  apply H.mul_mem
+  exact ha
+  exact (Subgroup.inv_mem_iff H).mpr hb
+  exact Subgroup.one_mem H
+  exact (Subgroup.mul_mem_cancel_right H hc).mpr ha
 
 /-
 
@@ -68,7 +74,10 @@ example (H K : Subgroup G) (a : G) : a ∈ H ⊓ K ↔ a ∈ H ∧ a ∈ K := by
 -- Note that `a ∈ H ⊔ K ↔ a ∈ H ∨ a ∈ K` is not true; only `←` is true.
 -- Take apart the `Or` and use `exact?` to find the relevant lemmas.
 example (H K : Subgroup G) (a : G) : a ∈ H ∨ a ∈ K → a ∈ H ⊔ K := by
-  sorry
+  intro h
+  rcases h with (h1|h2)
+  exact Subgroup.mem_sup_left h1
+  exact Subgroup.mem_sup_right h2
 
 end Subgroups
 
@@ -90,20 +99,27 @@ variable (φ : G →* H)
 
 -- `φ` preserves multiplication
 
-example (a b : G) : φ (a * b) = φ a * φ b := by
-  exact φ.map_mul a b -- see what happens if you remove both `by / exact` from this
+example (a b : G) : φ (a * b) = φ a * φ b := φ.map_mul a b
+
+-- see what happens if you remove both `by / exact` from this
 
 example (a b : G) : φ (a * b⁻¹ * 1) = φ a * (φ b)⁻¹ * 1 := by
+  rw [φ.map_mul (a * b⁻¹) 1]
+  rw [φ.map_mul a b⁻¹]
+  rw [φ.map_inv b, φ.map_one]
+
+
   -- if `φ.map_mul` means that `φ` preserves multiplication
   -- (and you can rewrite with this) then what do you think
   -- the lemmas that `φ` preserves inverse and one are called?
-  sorry
+
 
 -- Group homomorphisms are extensional: if two group homomorphisms
 -- are equal on all inputs then they're the same.
 
 example (φ ψ : G →* H) (h : ∀ g : G, φ g = ψ g) : φ = ψ := by
   -- Use the `ext` tactic.
-  sorry
+  ext t
+  apply h
 
 end Homomorphisms

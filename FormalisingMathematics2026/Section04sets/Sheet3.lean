@@ -30,18 +30,37 @@ variable (X : Type) -- Everything will be a subset of `X`
   (x y z : X) -- x,y,z are elements of `X` or, more precisely, terms of type `X`
 
 -- x,y,z are elements of `X` or, more precisely, terms of type `X`
-example : x ∉ A → x ∈ A → False := by sorry
+example : x ∉ A → x ∈ A → False := by
+  intro h i
+  apply h
+  exact i
 
-example : x ∈ A → x ∉ A → False := by sorry
+example : x ∈ A → x ∉ A → False := by
+  intro h i
+  apply i
+  exact h
 
-example : A ⊆ B → x ∉ B → x ∉ A := by sorry
+example : A ⊆ B → x ∉ B → x ∉ A := by
+  intro h i j
+  apply i
+  apply h at j
+  exact j
 
 -- Lean couldn't work out what I meant when I wrote `x ∈ ∅` so I had
 -- to give it a hint by telling it the type of `∅`.
-example : x ∉ (∅ : Set X) := by sorry
+example : x ∉ (∅ : Set X) := by
+  intro h
+  apply h
 
-example : x ∈ Aᶜ ↔ x ∉ A := by sorry
+example : x ∈ Aᶜ ↔ x ∉ A := by
+  constructor
+  · intro h i
+    apply h
+    exact i
+  · intro h i
+    apply h
+    exact i
 
-example : (∀ x, x ∈ A) ↔ ¬∃ x, x ∈ Aᶜ := by sorry
+example : (∀ x, x ∈ A) ↔ ¬∃ x, x ∈ Aᶜ := by aesop
 
-example : (∃ x, x ∈ A) ↔ ¬∀ x, x ∈ Aᶜ := by sorry
+example : (∃ x, x ∈ A) ↔ ¬∀ x, x ∈ Aᶜ := by aesop

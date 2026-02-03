@@ -80,18 +80,65 @@ Let's prove some theorems.
 
 -/
 
-example : A ⊆ A := by sorry
+example : A ⊆ A := by rfl
 
-example : A ⊆ B → B ⊆ C → A ⊆ C := by sorry
+example : A ⊆ B → B ⊆ C → A ⊆ C := by
+  intro h1 h2 x h3
+  apply h1 at h3
+  apply h2 at h3
+  exact h3
 
-example : A ⊆ A ∪ B := by sorry
+example : A ⊆ A ∪ B := by
+  intro x h
+  rw [mem_union_iff]
+  left
+  exact h
 
-example : A ∩ B ⊆ A := by sorry
+example : A ∩ B ⊆ A := by
+  intro x h
+  rw [mem_inter_iff] at h
+  rcases h with ⟨left, right⟩
+  exact left
 
-example : A ⊆ B → A ⊆ C → A ⊆ B ∩ C := by sorry
+example : A ⊆ B → A ⊆ C → A ⊆ B ∩ C := by
+  intro h i x k
+  constructor
+  · apply h at k
+    exact k
+  · apply i at k
+    exact k
 
-example : B ⊆ A → C ⊆ A → B ∪ C ⊆ A := by sorry
+example : B ⊆ A → C ⊆ A → B ∪ C ⊆ A := by
+  intro h i x k
+  rw [mem_union_iff] at k
+  cases k with
+  | inl hp =>
+    apply h at hp
+    exact hp
+  | inr hq =>
+    apply i
+    exact hq
 
-example : A ⊆ B → C ⊆ D → A ∪ C ⊆ B ∪ D := by sorry
 
-example : A ⊆ B → C ⊆ D → A ∩ C ⊆ B ∩ D := by sorry
+example : A ⊆ B → C ⊆ D → A ∪ C ⊆ B ∪ D := by
+  intro h i x j
+  rw [mem_union_iff] at *
+  cases j with
+  | inl hp =>
+    apply h at hp
+    left
+    exact hp
+  | inr hq =>
+    apply i at hq
+    right
+    exact hq
+
+example : A ⊆ B → C ⊆ D → A ∩ C ⊆ B ∩ D := by
+  intro h i x j
+  rw [mem_inter_iff] at *
+  rcases j with ⟨left, right⟩
+  constructor
+  · apply h at left
+    exact left
+  · apply i at right
+    exact right

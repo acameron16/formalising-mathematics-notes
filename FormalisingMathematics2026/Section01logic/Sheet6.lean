@@ -32,46 +32,147 @@ example : P → P ∨ Q := by
   exact hP
 
 example : Q → P ∨ Q := by
-  sorry
+  intro h
+  right
+  exact h
 
 -- Here are a few ways to break down a disjunction
 example : P ∨ Q → (P → R) → (Q → R) → R := by
-  intro hPoQ
+  intro hPoQ h2 h3
   cases hPoQ with
-  | inl h => sorry
-  | inr h => sorry
+  | inl h =>
+    apply h2
+    exact h
+  | inr h =>
+    apply h3
+    exact h
 
 example : P ∨ Q → (P → R) → (Q → R) → R := by
-  intro hPoQ
+  intro hPoQ h2 h3
   obtain h | h := hPoQ
-  · sorry
-  · sorry
+  · apply h2
+    exact h
+  · apply h3
+    exact h
 
 example : P ∨ Q → (P → R) → (Q → R) → R := by
-  rintro (h | h)
-  · sorry
-  · sorry
+  rintro (h | h) h1 h2
+  · apply h1
+    exact h
+  · apply h2
+    exact h
 
 -- symmetry of `or`
 example : P ∨ Q → Q ∨ P := by
-  sorry
+  rintro (hP | hQ)
+  · right
+    exact hP
+  · left
+    exact hQ
+
 
 -- associativity of `or`
 example : (P ∨ Q) ∨ R ↔ P ∨ Q ∨ R := by
-  sorry
+  constructor
+  · rintro ((hP | hQ) | hR)
+    · left
+      exact hP
+    · right
+      left
+      exact hQ
+    · right
+      right
+      exact hR
+  · rintro (hP | hQ | hR)
+    · left
+      left
+      exact hP
+    · left
+      right
+      exact hQ
+    · right
+      exact hR
+
 
 example : (P → R) → (Q → S) → P ∨ Q → R ∨ S := by
-  sorry
+  intro a b
+  rintro (c | d)
+  · apply a at c
+    left
+    exact c
+  · apply b at d
+    right
+    exact d
+
 
 example : (P → Q) → P ∨ R → Q ∨ R := by
-  sorry
+  intro a
+  rintro (b | c)
+  · apply a at b
+    left
+    exact b
+  · right
+    exact c
 
 example : (P ↔ R) → (Q ↔ S) → (P ∨ Q ↔ R ∨ S) := by
-  sorry
+  intro a b
+  constructor
+  · rintro (c | d)
+    · rw[a] at c
+      left
+      exact c
+    · rw[b] at d
+      right
+      exact d
+  · rintro (e | f)
+    · rw[a]
+      left
+      exact e
+    · rw[b]
+      right
+      exact f
 
 -- de Morgan's laws
 example : ¬(P ∨ Q) ↔ ¬P ∧ ¬Q := by
-  sorry
+  constructor
+  · intro a
+    change (P ∨ Q) → False at a
+    constructor
+    · change P → False
+      intro b
+      apply a
+      left
+      exact b
+    · change Q → False
+      intro c
+      apply a
+      right
+      exact c
+  · intro x
+    obtain ⟨left, right⟩ := x
+    change P ∨ Q → False
+    rintro (y | z)
+    · change P → False at left
+      apply left at y
+      exact y
+    · change Q → False at right
+      apply right at z
+      exact z
 
 example : ¬(P ∧ Q) ↔ ¬P ∨ ¬Q := by
-  sorry
+  constructor
+  · intro a
+    by_cases hP : P
+    · right
+      intro hQ
+      apply a
+      exact ⟨hP, hQ⟩
+    · left
+      exact hP
+  · rintro (x | y) ⟨z1, z2⟩
+    · change P → False at x
+      apply x
+      exact z1
+    · change Q → False at y
+      apply y
+      exact z2

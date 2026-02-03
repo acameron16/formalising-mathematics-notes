@@ -58,10 +58,15 @@ example : P ∧ Q → P := by
   exact h.1
 
 example : P ∧ Q → Q := by
-  sorry
+  rintro ⟨left, right⟩
+  exact right
 
 example : (P → Q → R) → P ∧ Q → R := by
-  sorry
+  intro h1 h2
+  obtain ⟨left, right⟩ := h2
+  apply h1 at left
+  apply left at right
+  exact right
 
 example : P → Q → P ∧ Q := by
   intro hP hQ
@@ -84,17 +89,30 @@ example : P → Q → P ∧ Q := by
 
 /-- `∧` is symmetric -/
 example : P ∧ Q → Q ∧ P := by
-  sorry
+  rintro ⟨left, right⟩
+  constructor
+  all_goals assumption
 
 example : P → P ∧ True := by
-  sorry
+  intro h
+  constructor
+  · assumption
+  · trivial
 
 example : False → P ∧ False := by
-  sorry
+  intro h
+  exfalso
+  exact h
 
 /-- `∧` is transitive -/
 example : P ∧ Q → Q ∧ R → P ∧ R := by
-  sorry
+  intro h1 h2
+  constructor
+  · exact h1.1
+  · exact h2.2
 
 example : (P ∧ Q → R) → P → Q → R := by
-  sorry
+  intro h1 h2 h3
+  apply h1
+  constructor
+  all_goals assumption

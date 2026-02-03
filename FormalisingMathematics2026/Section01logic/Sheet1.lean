@@ -142,17 +142,26 @@ example : P → P := by
 /-- If we know `P`, and we also know `P → Q`, we can deduce `Q`.
 This is called "Modus Ponens" by logicians. -/
 example : P → (P → Q) → Q := by
-  sorry
+  intro hP hQ
+  apply hQ
+  exact hP
 
 /-- `→` is transitive. That is, if `P → Q` and `Q → R` are true, then
 so is `P → R`. -/
 example : (P → Q) → (Q → R) → P → R := by
-  sorry
+  intro a b c
+  apply a at c
+  apply b at c
+  exact c
 
 /-- If `h : P → Q → R` with goal `⊢ R` and you `apply h`, you'll get
 two goals! Note that tactics operate on only the first goal. -/
 example : (P → Q → R) → (P → Q) → P → R := by
-  sorry
+  intro a b c
+  apply a
+  exact c
+  apply b at c
+  exact c
 
 /-
 Here are some harder puzzles. They won't teach you anything new about
@@ -164,19 +173,40 @@ in this section, where you'll learn some more tactics.
 variable (S T : Prop)
 
 example : (P → R) → (S → Q) → (R → T) → (Q → R) → S → T := by
-  sorry
+  intro a b c d e
+  apply b at e
+  apply d at e
+  apply c at e
+  exact e
 
 example : (P → Q) → ((P → Q) → P) → Q := by
-  sorry
+  intro a b
+  apply a
+  apply b at a
+  exact a
 
 example : ((P → Q) → R) → ((Q → R) → P) → ((R → P) → Q) → P := by
-  sorry
+  intro a b c
+  apply b
+  intro d
+  apply a
+  intro e
+  assumption
 
 example : ((Q → P) → P) → (Q → R) → (R → P) → P := by
-  sorry
+  intro a b c
+  apply a
+  intro d
+  apply b at d
+  apply c at d
+  assumption
 
 example : (((P → Q) → Q) → Q) → P → Q := by
-  sorry
+  intro a b
+  apply a
+  intro c
+  apply c
+  assumption
 
 example :
     (((P → Q → Q) → (P → Q) → Q) → R) →

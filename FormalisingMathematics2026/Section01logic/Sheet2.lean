@@ -53,13 +53,19 @@ example : False → P := by
   exact h
 
 example : True → False → True → False → True → False := by
-  sorry
+  intro a b c d e
+  assumption
 
 example : P → (P → False) → False := by
-  sorry
+  intro a b
+  apply b at a
+  assumption
 
 example : (P → False) → P → Q := by
-  sorry
+  intro a b
+  apply a at b
+  exfalso
+  assumption
 
 example : (True → False) → P := by
   intro h1

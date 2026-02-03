@@ -46,20 +46,20 @@ example (g : G) : g⁻¹ * g = 1 :=
 -- with the name of the axiom it found. Note also that you can instead *guess*
 -- the names of the axioms. For example what do you think the proof of `1 * a = a` is called?
 example (a b c : G) : a * b * c = a * (b * c) := by
-  sorry
+  exact mul_assoc a b c
 
 -- can alternatively be found with `apply?` if you didn't know the answer already
 -- or `rw?`
 -- or `simp?`
 example (a : G) : a * 1 = a := by
-  sorry
+  exact mul_one a
 
 -- Can you guess the last two?
 example (a : G) : 1 * a = a := by
-  sorry
+  exact one_mul a
 
 example (a : G) : a * a⁻¹ = 1 := by
-  sorry
+  exact mul_inv_cancel a
 
 -- As well as the axioms, Lean has many other standard facts which are true
 -- in all groups. See if you can prove these from the axioms, or find them
@@ -68,26 +68,35 @@ example (a : G) : a * a⁻¹ = 1 := by
 variable (a b c : G)
 
 example : a⁻¹ * (a * b) = b := by
-  sorry
+  rw [← mul_assoc]
+  rw [inv_mul_cancel]
+  rw [one_mul]
 
 example : a * (a⁻¹ * b) = b := by
-  sorry
+  exact mul_inv_cancel_left a b
 
 example {a b c : G} (h1 : b * a = 1) (h2 : a * c = 1) : b = c := by
   -- hint for this one if you're doing it from first principles: `b * (a * c) = (b * a) * c`
-  sorry
+  have h : b * 1 = b
+  exact mul_one b
+  rw [← h2] at h
+  rw [← mul_assoc] at h
+  rw [h1] at h
+  rw [one_mul] at h
+  exact Eq.symm h
+
 
 example : a * b = 1 ↔ a⁻¹ = b := by
-  sorry
+  exact Iff.symm inv_eq_iff_mul_eq_one
 
 example : (1 : G)⁻¹ = 1 := by
-  sorry
+  exact inv_one
 
 example : a⁻¹⁻¹ = a := by
-  sorry
+  exact inv_inv a
 
 example : (a * b)⁻¹ = b⁻¹ * a⁻¹ := by
-  sorry
+  exact mul_inv_rev a b
 
 /-
 
@@ -107,4 +116,14 @@ example : (b⁻¹ * a⁻¹)⁻¹ * 1⁻¹⁻¹ * b⁻¹ * (a⁻¹ * a⁻¹⁻¹�
 
 -- Try this trickier problem: if g^2=1 for all g in G, then G is abelian
 example (h : ∀ g : G, g * g = 1) : ∀ g h : G, g * h = h * g := by
-  sorry
+  intro x y
+  have a1 : x = x⁻¹
+  exact eq_inv_of_mul_eq_one_left (h x)
+  have a2 : y = y⁻¹
+  exact eq_inv_of_mul_eq_one_left (h y)
+  have a3 : (y * x)⁻¹ = y * x
+  exact DivisionMonoid.inv_eq_of_mul (y * x) (y * x) (h (y * x))
+  rw [a1, a2]
+  rw [← mul_inv_rev]
+  rw [a3]
+  rw [← a1, ← a2]
